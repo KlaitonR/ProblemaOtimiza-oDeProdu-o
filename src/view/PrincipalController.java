@@ -1,10 +1,18 @@
 package view;
 
 import java.util.ArrayList;
+
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 
 public class PrincipalController {
 	
@@ -22,73 +30,108 @@ public class PrincipalController {
 	
 	@FXML Button addItem;
 	@FXML Button gerarSolução;
-	
-	@FXML TextArea txtItens;
+
 	@FXML TextArea txtLimites;
 	@FXML TextArea txtResultado;
 	
+	@FXML  TableView <Item> tabItens;
+	@FXML  TableColumn < Item , Number > Colid;
+	@FXML  TableColumn < Item , Number > colMatProd;
+	@FXML  TableColumn < Item , Number > colCustoProd;
+	@FXML  TableColumn < Item , Number > colHorasProd;
+	@FXML  TableColumn < Item , Number > colLucroProd;
+	@FXML  TableColumn < Item , Number > colNumProd;
 	
 	int pInicial;
 	double penal;
 	int nGercoes;
 	int percentual;
 	double mPrima;
+	
+	int idItem;
 	double custo;
 	double horas;
+	double lucro;
+	int numProd;
+	
+	int numItem1;
+	int numItem2;
+	int numItem3;
+	int numItem4;
+	
 	double limitecus;
 	double limiteMat;
 	double limiteTemp;
-	double lucro;
 	
 	int geracao  = 0;
 	double maior = 0;
 	int psMaior = 0;
 	
 	String txtLim = "";
-	String txtIte = "";
 	String txtResult = "";
-	
+
 	ArrayList<Item> itens = new ArrayList<>(); 
 	int nItens;
 	
 	@FXML
 	public void addItem() {
 		
-		custo = Double.parseDouble(custoProducao.getText());
-		horas = Double.parseDouble(horasProducao.getText());
-		mPrima = Double.parseDouble(materiaPrima.getText());
-		lucro = Double.parseDouble(lucroProducao.getText());
+		try {
+			custo = Double.parseDouble(custoProducao.getText());
+			horas = Double.parseDouble(horasProducao.getText());
+			mPrima = Double.parseDouble(materiaPrima.getText());
+			lucro = Double.parseDouble(lucroProducao.getText());
 		
-		Item item = new Item(custo, horas, lucro, mPrima);
-		itens.add(item);
+			idItem++;
+			
+			Item item = new Item(custo, horas, lucro, mPrima, idItem);
+			itens.add(item);
+			
+			tableViewItens();
+			iniciaTable();
+			
+			custoProducao.clear();
+			horasProducao.clear();
+			lucroProducao.clear();
+			materiaPrima.clear();
+			
+			mostraMensagem("Item inserido com sucesso!", AlertType.CONFIRMATION);
 		
-		txtIte += "Item "+ itens.size() + "\nMatéria-Prima para produção: " + mPrima +
-				"\nCusto de produção: " + custo + "\nHoras de produção: " + horas +
-				"\nLucro de produção: " + lucro + "\n\n";
-		
-		txtItens.setText(txtIte);
-		
-		custoProducao.clear();
-		horasProducao.clear();
-		lucroProducao.clear();
-		materiaPrima.clear();
+		} catch (NumberFormatException e) {
+			mostraMensagem("Preencha apenas com números!", AlertType.WARNING);
+		}catch (Exception e) {
+			mostraMensagem(e.toString(), AlertType.ERROR);
+		}
 		
 	}
 	
 	@FXML
 	public void gerarSolucao() {
 		
+			
+			try {
+				pInicial = Integer.parseInt(populacaoInicial.getText());
+				penal = Double.parseDouble(penalidade.getText());
+				nGercoes = Integer.parseInt(numeroGeracao.getText());
+				percentual = Integer.parseInt(percentualMutacao.getText());
+				limitecus = Double.parseDouble(limiteCusto.getText());
+				limiteMat = Double.parseDouble(limiteMateria.getText());
+				limiteTemp = Double.parseDouble(limiteTempo.getText());
+			} catch (NumberFormatException e) {
+				mostraMensagem("Preencha apenas com números!", AlertType.WARNING);
+			}catch (Exception e) {
+				mostraMensagem(e.toString(), AlertType.ERROR);
+			}
+			
+			percentual = (int)(percentual/100)*pInicial;
+			
+			if(percentual < 1) {
+				percentual = 1;
+			}
+			
 		if(itens.size() > 1) {
 			
-			pInicial = Integer.parseInt(populacaoInicial.getText());
-			penal = Double.parseDouble(penalidade.getText());
-			nGercoes = Integer.parseInt(numeroGeracao.getText());
-			percentual = Integer.parseInt(percentualMutacao.getText());
-			limitecus = Double.parseDouble(limiteCusto.getText());
-			limiteMat = Double.parseDouble(limiteMateria.getText());
-			limiteTemp = Double.parseDouble(limiteTempo.getText());
-			
-			txtLim += "\nLimite de Matéria-Prima: " + limiteMat +
+			txtLim += "Limite de Matéria-Prima: " + limiteMat +
 					"\nLimite de Custo: " + limitecus +
 					"\nLimite de Horas: " + limiteTemp + "\n\n";
 			
@@ -110,12 +153,8 @@ public class PrincipalController {
 					
 				ag.selecao();
 				
-//				txtResult += ag.mostraResultado(itens, nItens);
-				
-//				txtResult += ag.crossover();
 				ag.crossover();
-				
-//				txtResult += ag.mutacao(); 
+
 				ag.mutacao(); 
 				
 				geracao++;
@@ -126,21 +165,22 @@ public class PrincipalController {
 					maior = fitnessPorGeracao.get(geracao).lucroTotal;
 					psMaior = geracao;
 				}
-			
+				
 			}	
-		
-//			txtResult += "\n";
 
 			for(int i=0; i<fitnessPorGeracao.size(); i++) {
-				txtResult += "\nFitnes geração " + (i+1) + " - Melhor fitness: " + fitnessPorGeracao.get(i).lucroTotal;
+				txtResult += "Fitnes geração " + (i+1) + " - Melhor fitness: " + fitnessPorGeracao.get(i).lucroTotal + "\n";
 			}
 			
 			txtResult += "\n\nMELHOR FITNESS: " + fitnessPorGeracao.get(psMaior).lucroTotal + " - GERAÇÃO: " + (psMaior+1) + "\n";
 			
 			String qtItens = "";
 			for(int i=0; i< nItens; i++) {
+				itens.get(i).numProducao = fitnessPorGeracao.get(psMaior).cromossomos[i];
 				qtItens += fitnessPorGeracao.get(psMaior).cromossomos[i] + " unidades do Item " + (i+1) + "\n ";
 			}
+			
+			tabItens.refresh();
 		
 			txtResult += "\nNúmero de itens para produzir: " + qtItens;
 			txtResult += "\nLucro Total: " + fitnessPorGeracao.get(psMaior).lucroTotal + " R$";
@@ -149,20 +189,42 @@ public class PrincipalController {
 			txtResult += "\nHoras Totais: " + (int)fitnessPorGeracao.get(psMaior).tempoTotal + " horas";
 			
 			txtResultado.setText(txtResult);
-			System.out.println(txtResult);
 			
 			fitnessPorGeracao.clear();
 			txtResult = "";
-			txtIte = "";
 			txtLim = "";
 			maior = 0;
 			psMaior = 0;
 			geracao = 0;
 			
+		}else {
+			mostraMensagem("Insira pelo menos 2 itens!", AlertType.WARNING);
 		}
 	
 	}
 	
+	@FXML
+	public void limparItens() {
+		itens.clear();
+		tableViewItens();
+	}
+	
+	@FXML
+	 private void tableViewItens(){  
+		tabItens.setItems(FXCollections.observableArrayList(itens));
+	 }
+	
+	@FXML
+	public void iniciaTable() {
+		Colid.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().id));
+		colMatProd.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().materiaItem));
+		colCustoProd.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().custoItem));
+		colHorasProd.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().horasProducao));
+		colLucroProd.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().lucroItem));
+		colNumProd.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().numProducao));
+
+	}
+
 	static public boolean criterioDeParada (ArrayList<Individuo> fitnessPorGeracao, int geracao, double maior, int psMaior, int nGeracoes) {
 		
 		int somatorio = 0;
@@ -186,7 +248,13 @@ public class PrincipalController {
 		
 		return false;
 	}
-
 	
-	
+	private void mostraMensagem (String msg, AlertType tipo) { // recebe uma String por paremetro
+		
+		Alert a = new Alert (tipo);
+		
+		a.setHeaderText(null); // modificar mensagem
+		a.setContentText(msg);
+		a.show();
+	}
 }

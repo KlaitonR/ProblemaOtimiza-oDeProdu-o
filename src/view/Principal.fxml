@@ -4,6 +4,8 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -12,7 +14,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="560.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.PrincipalController">
+<AnchorPane prefHeight="560.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.PrincipalController">
    <children>
       <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <top>
@@ -33,34 +35,50 @@
                   <Separator orientation="VERTICAL" />
                   <HBox>
                      <children>
-                        <VBox>
+                        <VBox prefHeight="502.0" prefWidth="590.0">
                            <children>
                               <Label text="Itens">
                                  <font>
                                     <Font name="System Bold" size="14.0" />
                                  </font>
-                              </Label>
-                              <TextArea fx:id="txtItens" prefHeight="136.0" prefWidth="330.0">
                                  <VBox.margin>
-                                    <Insets right="5.0" />
+                                    <Insets left="5.0" />
                                  </VBox.margin>
-                              </TextArea>
+                              </Label>
+                              <TableView fx:id="tabItens" prefHeight="200.0" prefWidth="200.0">
+                                <columns>
+                                  <TableColumn fx:id="Colid" prefWidth="33.0" text="id" />
+                                  <TableColumn fx:id="colMatProd" prefWidth="98.0" text="Matéria" />
+                                    <TableColumn fx:id="colCustoProd" prefWidth="94.0" text="Custo" />
+                                    <TableColumn fx:id="colHorasProd" prefWidth="99.0" text="Horas" />
+                                    <TableColumn fx:id="colLucroProd" prefWidth="98.0" text="Lucro" />
+                                    <TableColumn fx:id="colNumProd" prefWidth="128.0" text="Número de produção" />
+                                </columns>
+                                 <VBox.margin>
+                                    <Insets left="5.0" right="5.0" />
+                                 </VBox.margin>
+                              </TableView>
+                              <Button mnemonicParsing="false" onAction="#limparItens" text="Limpar itens">
+                                 <VBox.margin>
+                                    <Insets left="5.0" top="5.0" />
+                                 </VBox.margin>
+                              </Button>
                               <Label text="Limites">
                                  <font>
                                     <Font name="Arial Bold" size="14.0" />
                                  </font>
                                  <VBox.margin>
-                                    <Insets top="10.0" />
+                                    <Insets left="5.0" top="10.0" />
                                  </VBox.margin>
                               </Label>
                               <TextArea fx:id="txtLimites" prefHeight="98.0" prefWidth="330.0">
                                  <VBox.margin>
-                                    <Insets right="5.0" />
+                                    <Insets left="5.0" right="5.0" />
                                  </VBox.margin>
                               </TextArea>
                               <Label text="Resultados">
                                  <VBox.margin>
-                                    <Insets top="20.0" />
+                                    <Insets left="5.0" top="20.0" />
                                  </VBox.margin>
                                  <font>
                                     <Font name="Arial Bold" size="14.0" />
@@ -68,7 +86,7 @@
                               </Label>
                               <TextArea fx:id="txtResultado" prefHeight="153.0" prefWidth="330.0">
                                  <VBox.margin>
-                                    <Insets bottom="10.0" right="5.0" />
+                                    <Insets bottom="10.0" left="5.0" right="5.0" />
                                  </VBox.margin>
                               </TextArea>
                            </children>
@@ -89,85 +107,12 @@
                      <children>
                         <HBox>
                            <children>
-                              <Label text="População inicial: ">
-                                 <HBox.margin>
-                                    <Insets />
-                                 </HBox.margin>
-                              </Label>
-                              <TextField fx:id="populacaoInicial">
-                                 <HBox.margin>
-                                    <Insets left="5.0" />
-                                 </HBox.margin>
-                              </TextField>
-                           </children>
-                           <VBox.margin>
-                              <Insets left="10.0" top="10.0" />
-                           </VBox.margin>
-                        </HBox>
-                        <HBox>
-                           <children>
-                              <Label text="Penalidade: ">
-                                 <HBox.margin>
-                                    <Insets />
-                                 </HBox.margin>
-                              </Label>
-                              <TextField fx:id="penalidade">
-                                 <HBox.margin>
-                                    <Insets left="5.0" />
-                                 </HBox.margin>
-                              </TextField>
-                           </children>
-                           <VBox.margin>
-                              <Insets left="10.0" top="10.0" />
-                           </VBox.margin>
-                        </HBox>
-                        <HBox>
-                           <children>
-                              <Label text="Número de gerações: ">
-                                 <HBox.margin>
-                                    <Insets />
-                                 </HBox.margin>
-                              </Label>
-                              <TextField fx:id="numeroGeracao">
-                                 <HBox.margin>
-                                    <Insets left="5.0" />
-                                 </HBox.margin>
-                              </TextField>
-                           </children>
-                           <VBox.margin>
-                              <Insets left="10.0" top="10.0" />
-                           </VBox.margin>
-                        </HBox>
-                        <HBox>
-                           <children>
-                              <Label text="Percentual de mutação:  ">
-                                 <HBox.margin>
-                                    <Insets />
-                                 </HBox.margin>
-                              </Label>
-                              <TextField fx:id="percentualMutacao">
-                                 <HBox.margin>
-                                    <Insets left="5.0" />
-                                 </HBox.margin>
-                              </TextField>
-                           </children>
-                           <VBox.margin>
-                              <Insets left="10.0" top="10.0" />
-                           </VBox.margin>
-                        </HBox>
-                        <Separator prefHeight="12.0" prefWidth="362.0">
-                           <VBox.margin>
-                              <Insets top="10.0" />
-                           </VBox.margin>
-                        </Separator>
-                        <HBox>
-                           <children>
                               <Label text="Matéria para produção do Item: ">
                                  <HBox.margin>
                                     <Insets />
                                  </HBox.margin>
                               </Label>
-                              <TextField fx:id="materiaPrima">
+                              <TextField fx:id="materiaPrima" promptText="0000">
                                  <HBox.margin>
                                     <Insets left="5.0" />
                                  </HBox.margin>
@@ -184,7 +129,7 @@
                                     <Insets />
                                  </HBox.margin>
                               </Label>
-                              <TextField fx:id="custoProducao">
+                              <TextField fx:id="custoProducao" promptText="0000">
                                  <HBox.margin>
                                     <Insets left="5.0" />
                                  </HBox.margin>
@@ -201,7 +146,7 @@
                                     <Insets />
                                  </HBox.margin>
                               </Label>
-                              <TextField fx:id="horasProducao">
+                              <TextField fx:id="horasProducao" promptText="0000">
                                  <HBox.margin>
                                     <Insets left="5.0" />
                                  </HBox.margin>
@@ -218,7 +163,7 @@
                                     <Insets />
                                  </HBox.margin>
                               </Label>
-                              <TextField fx:id="lucroProducao">
+                              <TextField fx:id="lucroProducao" promptText="0000">
                                  <HBox.margin>
                                     <Insets left="5.0" />
                                  </HBox.margin>
@@ -233,6 +178,79 @@
                               <Insets left="10.0" top="10.0" />
                            </VBox.margin>
                         </Button>
+                        <Separator prefHeight="12.0" prefWidth="362.0">
+                           <VBox.margin>
+                              <Insets top="10.0" />
+                           </VBox.margin>
+                        </Separator>
+                        <HBox>
+                           <children>
+                              <Label text="População inicial: ">
+                                 <HBox.margin>
+                                    <Insets />
+                                 </HBox.margin>
+                              </Label>
+                              <TextField fx:id="populacaoInicial" promptText="Número de indíviduos">
+                                 <HBox.margin>
+                                    <Insets left="5.0" />
+                                 </HBox.margin>
+                              </TextField>
+                           </children>
+                           <VBox.margin>
+                              <Insets left="10.0" top="10.0" />
+                           </VBox.margin>
+                        </HBox>
+                        <HBox>
+                           <children>
+                              <Label text="Penalidade: ">
+                                 <HBox.margin>
+                                    <Insets />
+                                 </HBox.margin>
+                              </Label>
+                              <TextField fx:id="penalidade" prefHeight="25.0" prefWidth="170.0" promptText="2000 p/ cada 1000 de limite">
+                                 <HBox.margin>
+                                    <Insets left="5.0" />
+                                 </HBox.margin>
+                              </TextField>
+                           </children>
+                           <VBox.margin>
+                              <Insets left="10.0" top="10.0" />
+                           </VBox.margin>
+                        </HBox>
+                        <HBox>
+                           <children>
+                              <Label text="Número de gerações: ">
+                                 <HBox.margin>
+                                    <Insets />
+                                 </HBox.margin>
+                              </Label>
+                              <TextField fx:id="numeroGeracao" promptText="N gerações">
+                                 <HBox.margin>
+                                    <Insets left="5.0" />
+                                 </HBox.margin>
+                              </TextField>
+                           </children>
+                           <VBox.margin>
+                              <Insets left="10.0" top="10.0" />
+                           </VBox.margin>
+                        </HBox>
+                        <HBox>
+                           <children>
+                              <Label text="Percentual de mutação:  ">
+                                 <HBox.margin>
+                                    <Insets />
+                                 </HBox.margin>
+                              </Label>
+                              <TextField fx:id="percentualMutacao" prefHeight="25.0" prefWidth="160.0" promptText="Em porcentagem Ex: 2 (2%)">
+                                 <HBox.margin>
+                                    <Insets left="5.0" />
+                                 </HBox.margin>
+                              </TextField>
+                           </children>
+                           <VBox.margin>
+                              <Insets left="10.0" top="10.0" />
+                           </VBox.margin>
+                        </HBox>
                         <Separator layoutX="10.0" layoutY="160.0" prefHeight="12.0" prefWidth="362.0">
                            <VBox.margin>
                               <Insets top="10.0" />
@@ -245,7 +263,7 @@
                                     <Insets />
                                  </HBox.margin>
                               </Label>
-                              <TextField fx:id="limiteMateria">
+                              <TextField fx:id="limiteMateria" promptText="0000">
                                  <HBox.margin>
                                     <Insets left="5.0" />
                                  </HBox.margin>
@@ -262,7 +280,7 @@
                                     <Insets />
                                  </HBox.margin>
                               </Label>
-                              <TextField fx:id="limiteCusto">
+                              <TextField fx:id="limiteCusto" promptText="0000">
                                  <HBox.margin>
                                     <Insets left="5.0" />
                                  </HBox.margin>
@@ -279,7 +297,7 @@
                                     <Insets />
                                  </HBox.margin>
                               </Label>
-                              <TextField fx:id="limiteTempo">
+                              <TextField fx:id="limiteTempo" promptText="0000">
                                  <HBox.margin>
                                     <Insets left="5.0" />
                                  </HBox.margin>
