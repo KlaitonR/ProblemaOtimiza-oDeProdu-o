@@ -20,9 +20,9 @@
          <top>
             <VBox BorderPane.alignment="CENTER">
                <children>
-                  <Label alignment="CENTER" prefHeight="55.0" prefWidth="764.0" text="Sistema de solução de Problema de Otimização com algoritmo genético">
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="55.0" prefWidth="964.0" text="Sistema de solução para Problema de Otimização com algoritmo genético" textOverrun="CENTER_ELLIPSIS">
                      <font>
-                        <Font name="System Bold" size="14.0" />
+                        <Font name="System Bold" size="21.0" />
                      </font>
                   </Label>
                   <Separator prefWidth="200.0" />
@@ -63,19 +63,6 @@
                                     <Insets left="5.0" top="5.0" />
                                  </VBox.margin>
                               </Button>
-                              <Label text="Limites">
-                                 <font>
-                                    <Font name="Arial Bold" size="14.0" />
-                                 </font>
-                                 <VBox.margin>
-                                    <Insets left="5.0" top="10.0" />
-                                 </VBox.margin>
-                              </Label>
-                              <TextArea fx:id="txtLimites" prefHeight="98.0" prefWidth="330.0">
-                                 <VBox.margin>
-                                    <Insets left="5.0" right="5.0" />
-                                 </VBox.margin>
-                              </TextArea>
                               <Label text="Resultados">
                                  <VBox.margin>
                                     <Insets left="5.0" top="20.0" />
@@ -84,11 +71,16 @@
                                     <Font name="Arial Bold" size="14.0" />
                                  </font>
                               </Label>
-                              <TextArea fx:id="txtResultado" prefHeight="153.0" prefWidth="330.0">
+                              <TextArea fx:id="txtResultado" prefHeight="159.0" prefWidth="551.0">
                                  <VBox.margin>
                                     <Insets bottom="10.0" left="5.0" right="5.0" />
                                  </VBox.margin>
                               </TextArea>
+                              <Button mnemonicParsing="false" onAction="#limpaResultado" text="Limpar resultado">
+                                 <VBox.margin>
+                                    <Insets left="5.0" />
+                                 </VBox.margin>
+                              </Button>
                            </children>
                            <HBox.margin>
                               <Insets left="20.0" />
@@ -224,7 +216,7 @@
                                     <Insets />
                                  </HBox.margin>
                               </Label>
-                              <TextField fx:id="numeroGeracao" promptText="N gerações">
+                              <TextField fx:id="numeroGeracao" promptText="Nº gerações">
                                  <HBox.margin>
                                     <Insets left="5.0" />
                                  </HBox.margin>
@@ -307,11 +299,25 @@
                               <Insets left="10.0" top="10.0" />
                            </VBox.margin>
                         </HBox>
-                        <Button mnemonicParsing="false" onAction="#gerarSolucao" text="Gerar solução">
-                           <VBox.margin>
-                              <Insets left="130.0" top="20.0" />
-                           </VBox.margin>
-                        </Button>
+                        <HBox prefHeight="100.0" prefWidth="200.0">
+                           <children>
+                              <Button mnemonicParsing="false" onAction="#abreScript" text="Abrir Script">
+                                 <HBox.margin>
+                                    <Insets left="20.0" top="10.0" />
+                                 </HBox.margin>
+                              </Button>
+                              <Button mnemonicParsing="false" onAction="#limpaParametros" text="Limpar parâmetros">
+                                 <HBox.margin>
+                                    <Insets left="20.0" top="10.0" />
+                                 </HBox.margin>
+                              </Button>
+                              <Button mnemonicParsing="false" onAction="#gerarSolucao" text="Gerar solução">
+                                 <HBox.margin>
+                                    <Insets left="20.0" top="10.0" />
+                                 </HBox.margin>
+                              </Button>
+                           </children>
+                        </HBox>
                         <HBox prefHeight="100.0" prefWidth="200.0" />
                         <Separator prefWidth="200.0" />
                      </children>

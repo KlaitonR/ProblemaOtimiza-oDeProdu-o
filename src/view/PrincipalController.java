@@ -1,7 +1,11 @@
 package view;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
-
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
@@ -13,6 +17,10 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
+import javafx.stage.FileChooser;
+import util.AlgoritmoGenetico;
+import util.Individuo;
+import util.Item;
 
 public class PrincipalController {
 	
@@ -31,7 +39,6 @@ public class PrincipalController {
 	@FXML Button addItem;
 	@FXML Button gerarSolução;
 
-	@FXML TextArea txtLimites;
 	@FXML TextArea txtResultado;
 	
 	@FXML  TableView <Item> tabItens;
@@ -43,23 +50,18 @@ public class PrincipalController {
 	@FXML  TableColumn < Item , Number > colNumProd;
 	
 	int pInicial;
-	double penal;
 	int nGercoes;
 	int percentual;
-	double mPrima;
+	double penal;
 	
 	int idItem;
+	double mPrima;
 	double custo;
 	double horas;
 	double lucro;
 	int numProd;
 	
-	int numItem1;
-	int numItem2;
-	int numItem3;
-	int numItem4;
-	
-	double limitecus;
+	double limiteCus;
 	double limiteMat;
 	double limiteTemp;
 	
@@ -72,6 +74,9 @@ public class PrincipalController {
 
 	ArrayList<Item> itens = new ArrayList<>(); 
 	int nItens;
+	
+	InputStream scriptI;
+	String script;
 	
 	@FXML
 	public void addItem() {
@@ -102,62 +107,44 @@ public class PrincipalController {
 		}catch (Exception e) {
 			mostraMensagem(e.toString(), AlertType.ERROR);
 		}
-		
 	}
 	
 	@FXML
 	public void gerarSolucao() {
 		
+		try {
+			pInicial = Integer.parseInt(populacaoInicial.getText());
+			penal = Double.parseDouble(penalidade.getText());
+			nGercoes = Integer.parseInt(numeroGeracao.getText());
+			percentual = Integer.parseInt(percentualMutacao.getText());
+			limiteCus = Double.parseDouble(limiteCusto.getText());
+			limiteMat = Double.parseDouble(limiteMateria.getText());
+			limiteTemp = Double.parseDouble(limiteTempo.getText());
+		} catch (NumberFormatException e) {
+			mostraMensagem("Preencha apenas com números!", AlertType.WARNING);
+		}catch (Exception e) {
+			mostraMensagem(e.toString(), AlertType.ERROR);
+		}
 			
-			try {
-				pInicial = Integer.parseInt(populacaoInicial.getText());
-				penal = Double.parseDouble(penalidade.getText());
-				nGercoes = Integer.parseInt(numeroGeracao.getText());
-				percentual = Integer.parseInt(percentualMutacao.getText());
-				limitecus = Double.parseDouble(limiteCusto.getText());
-				limiteMat = Double.parseDouble(limiteMateria.getText());
-				limiteTemp = Double.parseDouble(limiteTempo.getText());
-			} catch (NumberFormatException e) {
-				mostraMensagem("Preencha apenas com números!", AlertType.WARNING);
-			}catch (Exception e) {
-				mostraMensagem(e.toString(), AlertType.ERROR);
-			}
+		percentual = (int)(percentual/100)*pInicial;
 			
-			percentual = (int)(percentual/100)*pInicial;
-			
-			if(percentual < 1) {
-				percentual = 1;
-			}
+		if(percentual < 1) {
+			percentual = 1;
+		}
 			
 		if(itens.size() > 1) {
 			
 			txtLim += "Limite de Matéria-Prima: " + limiteMat +
-					"\nLimite de Custo: " + limitecus +
-					"\nLimite de Horas: " + limiteTemp + "\n\n";
-			
-			txtLimites.setText(txtLim);
+					"\nLimite de Custo: " + limiteCus +
+					"\nLimite de Horas: " + limiteTemp + "\n";
 			
 			nItens = itens.size();
-			AlgoritmoGenetico ag = new AlgoritmoGenetico(nItens,pInicial,itens,limiteMat,limitecus,limiteTemp,penal,percentual);
+			AlgoritmoGenetico ag = new AlgoritmoGenetico(nItens,pInicial,itens,limiteMat,limiteCus,limiteTemp,penal,percentual);
 			ArrayList<Individuo> fitnessPorGeracao= new ArrayList<>();
 			
-			ag.primeiraPopulacao();
-			
-			fitnessPorGeracao.add(ag.fitness());
-			if(fitnessPorGeracao.get(geracao).lucroTotal > maior) {
-				maior = fitnessPorGeracao.get(geracao).lucroTotal;
-				psMaior = geracao;
-			}
-			
-			while(!criterioDeParada(fitnessPorGeracao, geracao, maior, psMaior, nGercoes)) {
-					
-				ag.selecao();
+			try {
 				
-				ag.crossover();
-
-				ag.mutacao(); 
-				
-				geracao++;
+				ag.primeiraPopulacao();
 				
 				fitnessPorGeracao.add(ag.fitness());
 				
@@ -166,10 +153,38 @@ public class PrincipalController {
 					psMaior = geracao;
 				}
 				
-			}	
-
+				while(!criterioDeParada(fitnessPorGeracao, geracao, maior, psMaior, nGercoes)) {
+						
+					ag.selecao();
+					
+					ag.crossover();
+	
+					ag.mutacao(); 
+					
+					geracao++;
+					
+					fitnessPorGeracao.add(ag.fitness());
+					
+					if(fitnessPorGeracao.get(geracao).lucroTotal > maior) {
+						maior = fitnessPorGeracao.get(geracao).lucroTotal;
+						psMaior = geracao;
+					}
+					
+				}	
+				
+			} catch (NullPointerException e) {
+				mostraMensagem("Errou ao executar", AlertType.ERROR);
+			}catch (IndexOutOfBoundsException e) {
+				mostraMensagem("Errou ao executar", AlertType.ERROR);
+			}catch (Exception e) {
+				mostraMensagem(e.toString(), AlertType.ERROR);
+			}
+			
+			txtResult += txtLim + "\n";
+			txtResult += "----------- Melhor indivíduo de cada geração -----------\n\n";
+					
 			for(int i=0; i<fitnessPorGeracao.size(); i++) {
-				txtResult += "Fitnes geração " + (i+1) + " - Melhor fitness: " + fitnessPorGeracao.get(i).lucroTotal + "\n";
+				txtResult += "Geração " + (i+1) + " - Melhor fitness: " + fitnessPorGeracao.get(i).lucroTotal + "\n";
 			}
 			
 			txtResult += "\n\nMELHOR FITNESS: " + fitnessPorGeracao.get(psMaior).lucroTotal + " - GERAÇÃO: " + (psMaior+1) + "\n";
@@ -207,6 +222,32 @@ public class PrincipalController {
 	public void limparItens() {
 		itens.clear();
 		tableViewItens();
+	}
+	
+	@FXML
+	public void limpaParametros() {
+		custoProducao.clear();
+		horasProducao.clear();
+		lucroProducao.clear();
+		materiaPrima.clear();
+		populacaoInicial.clear();
+		penalidade.clear();
+		numeroGeracao.clear();
+		percentualMutacao.clear();
+		limiteMateria.clear();
+		limiteCusto.clear();
+		limiteTempo.clear();
+	}
+	
+	@FXML
+	public void limpaResultado() {
+		txtResultado.clear();
+		for(int i=0; i < itens.size(); i++) {
+			itens.get(i).numProducao = 0;
+		}
+		
+		tabItens.refresh();
+		
 	}
 	
 	@FXML
@@ -248,6 +289,171 @@ public class PrincipalController {
 		
 		return false;
 	}
+	
+	@FXML
+	public void abreScript() throws IOException {
+		
+		if(itens.size() == 0) {
+			
+		script = leScrip();
+			
+		int cont = 0;
+		double parametrosItens[] = new double[4];
+		double parametrosaAlgoritmo[] = new double[7];
+		int contParametro = 0;
+			
+		int contId = 1;
+		int check = 0;
+		boolean acabou;
+		String str  = "";
+			
+		while(cont < script.length()) {
+				
+			if(script.charAt(cont) != ',' &&
+				script.charAt(cont) != ' ' &&
+				script.charAt(cont) != '|' &&
+				script.charAt(cont) != '[' &&
+				script.charAt(cont) != ']') {
+				
+				str += Character.toString(script.charAt(cont));
+					acabou = false;
+				}else {
+					acabou = true;
+				}
+				
+				if(check == 0 && !str.isEmpty() && acabou) {
+					try {
+						parametrosItens[contParametro] = Double.parseDouble(str);
+					}catch (NumberFormatException e) {
+						mostraMensagem("Erro ao converter dados do arquivo!", AlertType.ERROR);
+						return;
+					}catch (Exception e) {
+						mostraMensagem(e.toString(), AlertType.ERROR);
+					}
+					
+					if(contParametro == parametrosItens.length - 1) {
+						
+						mPrima = parametrosItens[0];
+						custo = parametrosItens[1];
+						horas = parametrosItens[2];
+						lucro = parametrosItens[3];
+					
+						Item item = new Item(custo, horas, lucro, mPrima, contId);
+						itens.add(item);
+						contParametro = 0;
+						contId++;
+					}else {
+						contParametro++;
+					}
+					str = "";
+				}
+				
+				if(script.charAt(cont) == '|')
+					check = 1;
+				
+				if(check == 1 && !str.isEmpty() && acabou) {
+					try {
+						parametrosaAlgoritmo[contParametro] = Double.parseDouble(str);
+					}catch (NumberFormatException e) {
+						mostraMensagem("Erro ao converter dados do arquivo!", AlertType.ERROR);
+						return;
+					}catch (Exception e) {
+						mostraMensagem(e.toString(), AlertType.ERROR);
+					}
+					
+					if(contParametro == parametrosaAlgoritmo.length - 1) {
+						
+						pInicial = (int)parametrosaAlgoritmo[0];
+						penal = parametrosaAlgoritmo[1];
+						nGercoes = (int)parametrosaAlgoritmo[2];
+						percentual = (int)parametrosaAlgoritmo[3];
+						limiteMat = parametrosaAlgoritmo[4];
+						limiteCus = parametrosaAlgoritmo[5];
+						limiteTemp = parametrosaAlgoritmo[6];
+						populacaoInicial.setText(Integer.toString(pInicial));
+						penalidade.setText(Double.toString(penal));
+						numeroGeracao.setText(Integer.toString(nGercoes));
+						percentualMutacao.setText(Integer.toString(percentual));
+						limiteMateria.setText(Double.toString(limiteMat));
+						limiteCusto.setText(Double.toString(limiteCus));
+						limiteTempo.setText(Double.toString(limiteTemp));
+	
+						contParametro = 0;
+					}else {
+						contParametro++;
+					}
+					
+					str = "";
+				}
+				
+				if(script.charAt(cont) == ';') 
+					return;
+				
+				cont++;
+				
+				tableViewItens();
+				iniciaTable();
+			
+			}
+			
+			}else {
+				mostraMensagem("Exclua os itens da tabela primeiro para evitar conflitos!", AlertType.WARNING);
+			}
+		
+	 
+	}
+	
+	
+	 private String leScrip() throws IOException {
+		 
+		 try {
+	 
+			File f = selecionaScript();
+			if(f!= null) {
+				
+				InputStream is = new FileInputStream(f);
+				java.io.InputStreamReader isr = new java.io.InputStreamReader(is);
+				BufferedReader br = new BufferedReader(isr);
+				String script = br.readLine();
+					
+				while(br.readLine() != null){
+					script += br.readLine() + "\n";
+				}
+		 
+				is.close();
+				isr.close();
+				br.close();
+	
+				return script;
+			}
+			
+		}catch (NullPointerException e) {
+			mostraMensagem("Formato dos dados não esperado, erro ao abrir o aruivo!", AlertType.ERROR);
+		}catch (Exception e) {
+			mostraMensagem(e.toString(), AlertType.ERROR);
+		}
+			
+			return null;
+		}
+		
+		private File selecionaScript() {
+			
+			try {
+				FileChooser fileChooser = new FileChooser();
+			   		fileChooser.setInitialDirectory(new File(
+			   				"C:\\Users\\klait\\eclipse-workspace\\ProblemaOtimizacaoDeProducao\\res"));
+			   		fileChooser.getExtensionFilters().add(new 
+			   				FileChooser.ExtensionFilter("*.txt", "*.TXT")); 	
+			   		File txtSelec = fileChooser.showOpenDialog(null);
+			   		if (txtSelec != null) {
+			   			return txtSelec;
+			   		}
+			}catch (Exception e) {
+				mostraMensagem(e.toString(), AlertType.ERROR);
+			}
+			
+			return null;
+		}
 	
 	private void mostraMensagem (String msg, AlertType tipo) { // recebe uma String por paremetro
 		

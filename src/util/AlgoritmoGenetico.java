@@ -1,4 +1,4 @@
-package view;
+package util;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -9,7 +9,7 @@ public class AlgoritmoGenetico {
 	int nPopulacao;
 	ArrayList<Item> itens = new ArrayList<>();
 	double penalidade;
-	int nMutacoes;
+	int percentual;
 	double limiteMateria;
 	double limiteCusto;
 	double limiteTempo;
@@ -20,8 +20,7 @@ public class AlgoritmoGenetico {
 	double fitnessTotal;
 	double sorteio;
 	int nSelecionados = 0;
-	String faixa = "";
-	
+
 	ArrayList<Individuo> selecionados = new ArrayList<>();
 	ArrayList<Individuo> novaGeracao = new ArrayList<>();
 	ArrayList<Individuo> mutacoes = new ArrayList<>();
@@ -33,14 +32,14 @@ public class AlgoritmoGenetico {
 		this.nPopulacao = nPopulacao;
 		this.itens = itens;
 		this.penalidade = penalidade - (penalidade*2);
-		this.nMutacoes = percentual;
+		this.percentual = percentual;
 		this.limiteMateria = limiteMateriaPrima;
 		this.limiteCusto = limiteCusto;
 		this.limiteTempo = limiteTemp;
 		
 	}
 	
-	public void primeiraPopulacao() {
+public void primeiraPopulacao() {
 		
 		int i=0;
 		
@@ -55,8 +54,6 @@ public class AlgoritmoGenetico {
 				i++;
 			}
 		}
-		
-		System.out.println("Gerou primeira população");
 		
 	}
 	
@@ -142,9 +139,6 @@ public class AlgoritmoGenetico {
 			populacao.individuos.get(i).propSelecao = (populacao.individuos.get(i).beneficio/fitnessTotal) * 100;              
 		}
 		
-		
-		System.out.println("Calculou Fitness");
-		
 		return ind;
 		
 	}
@@ -164,9 +158,6 @@ public class AlgoritmoGenetico {
 				individuo = null;
 			}
 		}
-		
-		System.out.println("Selecionou");
-		
 	}
 	
 	public Individuo rodarRoleta() {
@@ -176,44 +167,35 @@ public class AlgoritmoGenetico {
 	double inicioDaFaixa = 0;
 	double fimDaFaixa = 0;
 	Individuo ind = null;
-	
-	faixa += "Número sorteado: " + sorteio + "\n \n";
 		
 		while(i < nPopulacao){ 
 			
 			if(populacao.individuos.get(i).propSelecao > 0) { //Se a porcentagem é 0, não tem espaço na roleta e apenas pula a vez
 				
 				fimDaFaixa += populacao.individuos.get(i).propSelecao; //Defina o epaço do individuo na roleta
-				faixa += "Faixa do individuo " + (i+1)+ " - De " + inicioDaFaixa + " ";
 				
 				if(sorteio >= inicioDaFaixa && 
 						sorteio < fimDaFaixa && 
 						!populacao.individuos.get(i).selecionado) {
 					populacao.individuos.get(i).selecionado = true;
 					ind = populacao.individuos.get(i);
-					faixa += "até " + fimDaFaixa + "\n";
-					faixa += "\n Individuo selecionado: " + (i+1)+ "\n\n";
 					return ind;
 				}
 				
 				inicioDaFaixa += populacao.individuos.get(i).propSelecao; //Defina os epaços do individuo na roleta
-				faixa += "até " + fimDaFaixa + "\n";
 			}
 			
 			i++;
 		}
 		
-		faixa += "\n";
-		
 		return null;
 	}
 	
-	public String crossover() {
+	public void crossover() {
 		
 		int pontoDeCorte = 0;
 		int sorteio1 = 0;
 		int sorteio2 = 0;
-		String result = "";
 	
 		while(selecionados.size() > 0) {
 			
@@ -226,7 +208,7 @@ public class AlgoritmoGenetico {
 				sorteio2 = roleta.nextInt(selecionados.size());
 			}
 			
-			result += aplicaCrossover(sorteio1, sorteio2, pontoDeCorte);
+			aplicaCrossover(sorteio1, sorteio2, pontoDeCorte);
 		
 		}
 		
@@ -234,10 +216,6 @@ public class AlgoritmoGenetico {
 		populacao.individuos.addAll(novaGeracao);
 		selecionados.clear();
 		novaGeracao.clear();
-		
-		System.out.println("Fez crossover");
-		
-		return result;
 		
 	}
 	
@@ -251,33 +229,12 @@ public class AlgoritmoGenetico {
 		
 	}
 	
-	public String aplicaCrossover(int sorteio1, int sorteio2, int pontoDeCorte) {
+	public void aplicaCrossover(int sorteio1, int sorteio2, int pontoDeCorte) {
 		
-		String cros = "\n----------- INDIVIDUOS SELECIONADOS PARA O CROSSOVER --------------\n";
 		Individuo filho1 = new Individuo(nItens);
 		Individuo filho2 = new Individuo(nItens);
 		Individuo pai1 = new Individuo(nItens);
 		Individuo pai2 = new Individuo(nItens);
-		
-		cros+= "\nPonto de Corte " + (pontoDeCorte+1)+"\n";
-		
-		cros+= "\nIndividuo 1: ";
-		for(int i=0; i<nItens; i++) {
-			cros +=  selecionados.get(sorteio1).cromossomos[i];
-			if(i==pontoDeCorte)
-				cros += "|";
-		}
-		
-		cros+= "\nIndividuo 2: ";
-		for(int i=0; i<nItens; i++) {
-			cros +=  selecionados.get(sorteio2).cromossomos[i];
-			if(i==pontoDeCorte)
-				cros += "|";
-		}
-		
-		cros+="\n";
-		
-		cros+= "\n--- APLICANDO CROSSOVER ---\n";
 		
 		//Faz o crossover
 		for(int i=0; i<nItens; i++) {
@@ -309,23 +266,6 @@ public class AlgoritmoGenetico {
 			}
 		}
 		
-		//String para resultado
-		cros+= "\nFilho 1: ";
-		for(int i=0; i<nItens; i++) {
-			cros +=  filho1.cromossomos[i];
-			if(i==pontoDeCorte)
-				cros += "|";
-		}
-	
-		cros+= "\nFilho 2: ";
-		for(int i=0; i<nItens; i++) {
-			cros +=  filho2.cromossomos[i];
-			if(i==pontoDeCorte)
-				cros += "|";
-		}
-		
-		cros+="\n";
-		
 		pai1.cromossomos = selecionados.get(sorteio1).cromossomos;
 		pai2.cromossomos = selecionados.get(sorteio2).cromossomos;
 		novaGeracao.add(pai1);
@@ -338,16 +278,9 @@ public class AlgoritmoGenetico {
 		}
 		
 		selecionados.remove(sorteio2);
-		
-		cros += "\nNúmero de indv ainda restantes para aplicar cross: " + selecionados.size()+"\n";
-		
+
 		novaGeracao.add(filho1);
 		novaGeracao.add(filho2);
-		
-		cros += "\nNúmero de indv da nova geração: " + novaGeracao.size()+"\n";
-		
-		return "\n" + cros + "\n";
-		
 	}
 	
 	public boolean confirmaCrossover(Individuo f, Individuo p) {
@@ -368,23 +301,16 @@ public class AlgoritmoGenetico {
 		
 	}
 	
-	public String mutacao() {
+	public void mutacao() {
 		
-		String mut = "\n----------- APLICA MUTAÇÃO ------------\n";
 		int geneDeMutacao = 0;
 		int indexMutacao = 0;
 		int cont = 0;
 		
-		while(cont < nMutacoes) { //Enquanto o contador não for igual ao de individuos que sofrerá mutação
+		while(cont < percentual) { //Enquanto o contador não for igual ao de individuos que sofrerá mutação
 			
 			geneDeMutacao = roleta.nextInt(nItens);
 			indexMutacao = roleta.nextInt(populacao.individuos.size());
-			
-			String antesDaMutacao = "\nIndividuo: ";
-			
-			for(int i=0; i<nItens; i++) { // String para guardar resultado
-				antesDaMutacao += populacao.individuos.get(indexMutacao).cromossomos[i];
-			}
 			
 			int valorMutacao = roleta.nextInt(401);
 			
@@ -393,23 +319,7 @@ public class AlgoritmoGenetico {
 			}
 		
 			populacao.individuos.get(indexMutacao).cromossomos[geneDeMutacao] = valorMutacao;
-			
 			mutacoes.add(populacao.individuos.get(indexMutacao)); //passa para a lista de individuos já mudificados
-			System.out.println("\nMutação no individuo " + (indexMutacao+1) + " no gene " + (geneDeMutacao+1));
-			
-			String aposMutacao = "\nIndividio após mutação: ";
-			
-			for(int i=0; i<nItens; i++) { // String para guardar resultado
-				 
-				if(geneDeMutacao == i) { 
-					aposMutacao += "|"+populacao.individuos.get(indexMutacao).cromossomos[i]+"|";
-				}else {
-					aposMutacao += populacao.individuos.get(indexMutacao).cromossomos[i];
-				}
-			}
-			
-			mut += antesDaMutacao + "\n";
-			mut += aposMutacao+"\n";
 			
 			cont++;
 			
@@ -420,55 +330,5 @@ public class AlgoritmoGenetico {
 		populacao.individuos.addAll(mutacoes); //Ao final, adiciona novamente à população todos os individuos que sofreram mutação
 		mutacoes.clear(); // limpa a lista de individuos que foram modificados
 		
-		
-		System.out.println("Aplicou mutação");
-		
-		return mut;
 	}
-	
-	public String mostraResultado(ArrayList<Item> itens, int nItens) {
-		
-		
-		String selecionados = "";
-		String Cromossomo = "";
-		selecionados = "\nIndividuos Selecionados: ";
-		String result = "";
-		
-		result += "/n";
-		
-		for(int i=0; i<nItens;i++) {
-			result += "Item " + (i+1) + " - Custo: "+ itens.get(i).custoItem + "  Lucro: " + itens.get(i).lucroItem; 
-		}
-		
-		result += "\n------ POPULAÇÃO ------\n";
-		
-		for(int i=0; i<nPopulacao; i++) { 
-			
-			result += "\nIndividuo " + (i+1); 
-			Cromossomo = "";
-			if(populacao.individuos.get(i).selecionado)
-				selecionados += (i+1) + "  ";
-			
-			for(int j=0; j<nItens; j++) { 
-				Cromossomo += populacao.individuos.get(i).cromossomos[j] + " ";
-			
-			}
-			
-			result += "Cromossomos: " + Cromossomo;
-			result += "Lucro: " + populacao.individuos.get(i).lucroTotal; 
-			result += "Custo: " + populacao.individuos.get(i).custoTotal; 
-			result += "Probabilidade de seleção: " + populacao.individuos.get(i).propSelecao;
-			result += "\n";
-			
-		}
-		
-		result += "---------------------------------------------------------------------------";
-		result += "\nFitness total: " + fitnessTotal + "\n"; 
-		result += faixa;
-		result += selecionados;
-		
-		return result;
-		
-	}
-	
 }

@@ -1,0 +1,9 @@
+[1,100,20,60] [1,120,30,80] [1,150,25,90] [1,120,28,50] | [20,100000,50,2,400,50000,10000] ;
+
+**************** LEGENDA ******************
+
+[matéria, custo, horas, lucro] => Parâmetro dos itens
+| => Indica o início dos parâmetros do algoritmo genético
+, => Separa os parâmetros
+" " (Espaços em branco) => separador de itens e limites (todos os espaços acima são necessários)
+; => Indica o fim dos parâmetros
