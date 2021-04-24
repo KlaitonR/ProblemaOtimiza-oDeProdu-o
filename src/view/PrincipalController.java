@@ -55,11 +55,11 @@ public class PrincipalController {
 	double penal;
 	
 	int idItem;
-	int numProd;
 	double mPrima;
 	double custo;
 	double horas;
 	double lucro;
+	int numProd;
 	
 	double limiteCus;
 	double limiteMat;
@@ -80,8 +80,6 @@ public class PrincipalController {
 	
 	@FXML
 	public void addItem() {
-		
-		idItem = itens.size();
 		
 		try {
 			custo = Double.parseDouble(custoProducao.getText());
@@ -122,18 +120,11 @@ public class PrincipalController {
 			limiteCus = Double.parseDouble(limiteCusto.getText());
 			limiteMat = Double.parseDouble(limiteMateria.getText());
 			limiteTemp = Double.parseDouble(limiteTempo.getText());
-			
 		} catch (NumberFormatException e) {
 			mostraMensagem("Preencha apenas com números!", AlertType.WARNING);
 		}catch (Exception e) {
 			mostraMensagem(e.toString(), AlertType.ERROR);
 		}
-		
-		if(tratamentoDadosAlgoritmo())
-			return;
-		
-		if(tratamentoDadosItem())
-			return;
 			
 		percentual = (int)(percentual/100)*pInicial;
 			
@@ -256,6 +247,7 @@ public class PrincipalController {
 		}
 		
 		tabItens.refresh();
+		
 	}
 	
 	@FXML
@@ -271,6 +263,7 @@ public class PrincipalController {
 		colHorasProd.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().horasProducao));
 		colLucroProd.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().lucroItem));
 		colNumProd.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().numProducao));
+
 	}
 
 	static public boolean criterioDeParada (ArrayList<Individuo> fitnessPorGeracao, int geracao, double maior, int psMaior, int nGeracoes) {
@@ -278,19 +271,21 @@ public class PrincipalController {
 		int somatorio = 0;
 		
 		for(int i = psMaior; i<geracao; i++) {
-			if(fitnessPorGeracao.get(i).lucroTotal > maior) {
-				maior = fitnessPorGeracao.get(i).lucroTotal;
-				psMaior = i;
-			}else {
-				somatorio++;
-			}
+				if(fitnessPorGeracao.get(i).lucroTotal > maior) {
+					maior = fitnessPorGeracao.get(i).lucroTotal;
+					psMaior = i;
+				}else {
+					somatorio++;
+				}
 		}
 		
-		if(somatorio >= 15) 
+		if(somatorio >= 15) {
 			return true;
+		}
 		
-		if(geracao == nGeracoes)
+		if(geracao == nGeracoes) {
 			return true;
+		}
 		
 		return false;
 	}
@@ -300,39 +295,33 @@ public class PrincipalController {
 		
 		if(itens.size() == 0) {
 			
-			script = leScrip();
-			if(script == null) {
-				 IllegalArgumentException erro = new IllegalArgumentException();
-				 mostraMensagem("Erro ao ler o arquivo" +
-				 " \n\nMensagem do erro: " + erro.toString(), AlertType.ERROR);
-				 return;
-			}
-				
-			int cont = 0;
-			double parametrosItens[] = new double[4];
-			double parametrosaAlgoritmo[] = new double[7];
-			int contParametro = 0;
-				
-			int contId = 1;
-			int check = 0;
-			boolean acabou;
-			String str = "";
+		script = leScrip();
 			
-			while(cont < script.length()) {
-					
-				if(script.charAt(cont) != ',' &&
+		int cont = 0;
+		double parametrosItens[] = new double[4];
+		double parametrosaAlgoritmo[] = new double[7];
+		int contParametro = 0;
+			
+		int contId = 1;
+		int check = 0;
+		boolean acabou;
+		String str  = "";
+			
+		while(cont < script.length()) {
+				
+			if(script.charAt(cont) != ',' &&
 				script.charAt(cont) != ' ' &&
 				script.charAt(cont) != '|' &&
 				script.charAt(cont) != '[' &&
 				script.charAt(cont) != ']') {
-					str += Character.toString(script.charAt(cont));
+				
+				str += Character.toString(script.charAt(cont));
 					acabou = false;
 				}else {
 					acabou = true;
 				}
-					
+				
 				if(check == 0 && !str.isEmpty() && acabou) {
-					
 					try {
 						parametrosItens[contParametro] = Double.parseDouble(str);
 					}catch (NumberFormatException e) {
@@ -341,12 +330,14 @@ public class PrincipalController {
 					}catch (Exception e) {
 						mostraMensagem(e.toString(), AlertType.ERROR);
 					}
+					
+					if(contParametro == parametrosItens.length - 1) {
 						
-					if(contParametro == parametrosItens.length - 1) {	
 						mPrima = parametrosItens[0];
 						custo = parametrosItens[1];
 						horas = parametrosItens[2];
 						lucro = parametrosItens[3];
+					
 						Item item = new Item(custo, horas, lucro, mPrima, contId);
 						itens.add(item);
 						contParametro = 0;
@@ -354,97 +345,72 @@ public class PrincipalController {
 					}else {
 						contParametro++;
 					}
+					str = "";
+				}
+				
+				if(script.charAt(cont) == '|')
+					check = 1;
+				
+				if(check == 1 && !str.isEmpty() && acabou) {
+					try {
+						parametrosaAlgoritmo[contParametro] = Double.parseDouble(str);
+					}catch (NumberFormatException e) {
+						mostraMensagem("Erro ao converter dados do arquivo!", AlertType.ERROR);
+						return;
+					}catch (Exception e) {
+						mostraMensagem(e.toString(), AlertType.ERROR);
+					}
+					
+					if(contParametro == parametrosaAlgoritmo.length - 1) {
+						
+						pInicial = (int)parametrosaAlgoritmo[0];
+						penal = parametrosaAlgoritmo[1];
+						nGercoes = (int)parametrosaAlgoritmo[2];
+						percentual = (int)parametrosaAlgoritmo[3];
+						limiteMat = parametrosaAlgoritmo[4];
+						limiteCus = parametrosaAlgoritmo[5];
+						limiteTemp = parametrosaAlgoritmo[6];
+						populacaoInicial.setText(Integer.toString(pInicial));
+						penalidade.setText(Double.toString(penal));
+						numeroGeracao.setText(Integer.toString(nGercoes));
+						percentualMutacao.setText(Integer.toString(percentual));
+						limiteMateria.setText(Double.toString(limiteMat));
+						limiteCusto.setText(Double.toString(limiteCus));
+						limiteTempo.setText(Double.toString(limiteTemp));
+	
+						contParametro = 0;
+					}else {
+						contParametro++;
+					}
 					
 					str = "";
-					
-					}
-					
-					if(script.charAt(cont) == '|')
-						check = 1;
-					
-					if(check == 1 && !str.isEmpty() && acabou) {
-						try {
-							parametrosaAlgoritmo[contParametro] = Double.parseDouble(str);
-						}catch (NumberFormatException e) {
-							mostraMensagem("Erro ao converter dados do arquivo!", AlertType.ERROR);
-							return;
-						}catch (Exception e) {
-							mostraMensagem(e.toString(), AlertType.ERROR);
-						}
-						
-						if(contParametro == parametrosaAlgoritmo.length - 1) {
-							pInicial = (int)parametrosaAlgoritmo[0];
-							penal = parametrosaAlgoritmo[1];
-							nGercoes = (int)parametrosaAlgoritmo[2];
-							percentual = (int)parametrosaAlgoritmo[3];
-							limiteMat = parametrosaAlgoritmo[4];
-							limiteCus = parametrosaAlgoritmo[5];
-							limiteTemp = parametrosaAlgoritmo[6];
-							populacaoInicial.setText(Integer.toString(pInicial));
-							penalidade.setText(Double.toString(penal));
-							numeroGeracao.setText(Integer.toString(nGercoes));
-							percentualMutacao.setText(Integer.toString(percentual));
-							limiteMateria.setText(Double.toString(limiteMat));
-							limiteCusto.setText(Double.toString(limiteCus));
-							limiteTempo.setText(Double.toString(limiteTemp));
-							contParametro = 0;
-							
-						}else {
-							contParametro++;
-						}
-						
-						str = "";
-					}
-					
-					if(script.charAt(cont) == ';') 
-						return;
-					
-					cont++;
-					
-					tableViewItens();
-					iniciaTable();
 				}
-		}else {
-			mostraMensagem("Exclua os itens da tabela primeiro para evitar conflitos!", AlertType.WARNING);
-		}
+				
+				if(script.charAt(cont) == ';') 
+					return;
+				
+				cont++;
+				
+				tableViewItens();
+				iniciaTable();
+			
+			}
+			
+			}else {
+				mostraMensagem("Exclua os itens da tabela primeiro para evitar conflitos!", AlertType.WARNING);
+			}
+		
+	 
 	}
 	
-	 @FXML
-	 public void excluiItem() {
-		  
-		 try {
-			Item item = selecionaItem();
-			itens.remove(item);
-			tableViewItens();
-			iniciaTable();
-			mostraMensagem("Item deletado com sucesso!", AlertType.CONFIRMATION);
-		 }catch (NullPointerException e) {
-			 mostraMensagem("Selecione um item para realizar está operação.", AlertType.ERROR);	
-			
-		}catch (Exception e) {
-			mostraMensagem("Erro não identificado:\n " + e.toString(), AlertType.ERROR);
-				
-		}
-	 }
-	
-	 public Item selecionaItem(){
-			
-			Item item = null;
-			
-			try {
-				item = tabItens.getSelectionModel().getSelectedItem();
-			}catch (Exception e) {
-				mostraMensagem("Erro não identificado.\n " + e.toString(), AlertType.ERROR);
-			}
-				
-			return item;
-		}
 	
 	 private String leScrip() throws IOException {
 		 
 		 try {
+	 
 			File f = selecionaScript();
 			if(f!= null) {
+				
 				InputStream is = new FileInputStream(f);
 				java.io.InputStreamReader isr = new java.io.InputStreamReader(is);
 				BufferedReader br = new BufferedReader(isr);
@@ -471,6 +437,7 @@ public class PrincipalController {
 		}
 		
 		private File selecionaScript() {
+			
 			try {
 				FileChooser fileChooser = new FileChooser();
 			   		fileChooser.setInitialDirectory(new File(
@@ -487,77 +454,6 @@ public class PrincipalController {
 			
 			return null;
 		}
-		
-	public boolean tratamentoDadosItem() {
-		
-		for(int i=0; i < itens.size(); i++) {
-			if(itens.get(i).custoItem <= 0 || itens.get(i).custoItem > limiteCus ||
-					itens.get(i).horasProducao <= 0 || itens.get(i).horasProducao > limiteTemp ||
-							itens.get(i).materiaItem <= 0 || itens.get(i).materiaItem > limiteMat) {
-				IllegalArgumentException erro = new IllegalArgumentException();
-				mostraMensagem("Os parâmetro de CUSTO, HORAS e MATÉRIA-PRIMA não podem serem menores ou iguais a 0 (zero)\n" +
-				"ou maiores do que seus respectivos limites\n" +
-				"ID do item: " + (i+1) +
-				 " \n\nMensagem do erro: " + erro.toString(), AlertType.ERROR);
-				return true;
-			}
-		}
-			
-		return false;
-	}
-		
-	public boolean tratamentoDadosAlgoritmo() {
-			
-		//Calculando fatorial
-		double f = 1;
-		int x = itens.size();
-		
-		while (x > 1){
-			 f += f *(x-1); 
-			 x--;
-		}
-		
-		if(pInicial <= 0 || pInicial > f) {
-			IllegalArgumentException erro = new IllegalArgumentException();
-			mostraMensagem("O parâmetro PENALIDADE não pode ser menor ou igual a 0 (zero)" +
-			"e maior do que o fatorial do número de itens" +
-			" \n\nMensagem do erro: " + erro.toString(), AlertType.ERROR);
-			return true;
-		}
-		
-	
-		if(penal <= 0) {
-			IllegalArgumentException erro = new IllegalArgumentException();
-			mostraMensagem("O parâmetro PENALIDADE não pode ser menor ou igual a 0 (zero)" +
-			" \n\nMensagem do erro: " + erro.toString(), AlertType.ERROR);
-			return true;
-		}
-		
-		if(nGercoes <= 0) {
-			IllegalArgumentException erro = new IllegalArgumentException();
-			mostraMensagem("O parâmetro NÚMERO DE GERAÇÕES não pode ser menor ou igual a 0 (zero)" +
-			" \n\nMensagem do erro: " + erro.toString(), AlertType.ERROR);
-			return true;
-		}
-			
-		if(percentual < 0 || percentual > 99) {
-			 IllegalArgumentException erro = new IllegalArgumentException();
-			 mostraMensagem("O parâmetro PERCENTUAL DE MUTAÇÃO não pode ser:\n-> 100% ou acima (cem por cento)\n-> Negativo" +
-			 " \n\nMensagem do erro: " + erro.toString(), AlertType.ERROR);
-			 return true;
-		}
-			
-		if(limiteCus <= 0 ||
-				limiteMat <= 0 ||
-				limiteTemp <=0) {
-			 IllegalArgumentException erro = new IllegalArgumentException();
-			 mostraMensagem("O parâmetros de LIMITE não podem serem menores ou iguais a 0 (zero)" +
-			 " \n\nMensagem do erro: " + erro.toString(), AlertType.ERROR);
-			 return true;
-		}
-			
-		return false;
-	}
 	
 	private void mostraMensagem (String msg, AlertType tipo) { // recebe uma String por paremetro
 		

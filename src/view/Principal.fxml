@@ -20,7 +20,7 @@
          <top>
             <VBox BorderPane.alignment="CENTER">
                <children>
-                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="55.0" prefWidth="964.0" text="Problema de Otimização com algoritmo genético" textOverrun="CENTER_ELLIPSIS">
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="55.0" prefWidth="964.0" text="Sistema de solução para Problema de Otimização com algoritmo genético" textOverrun="CENTER_ELLIPSIS">
                      <font>
                         <Font name="System Bold" size="21.0" />
                      </font>
@@ -47,31 +47,22 @@
                               </Label>
                               <TableView fx:id="tabItens" prefHeight="200.0" prefWidth="200.0">
                                 <columns>
-                                  <TableColumn fx:id="Colid" prefWidth="38.0" text="id" />
-                                  <TableColumn fx:id="colMatProd" prefWidth="101.0" text="Matéria" />
-                                    <TableColumn fx:id="colCustoProd" prefWidth="92.0" text="Custo" />
+                                  <TableColumn fx:id="Colid" prefWidth="33.0" text="id" />
+                                  <TableColumn fx:id="colMatProd" prefWidth="98.0" text="Matéria" />
+                                    <TableColumn fx:id="colCustoProd" prefWidth="94.0" text="Custo" />
                                     <TableColumn fx:id="colHorasProd" prefWidth="99.0" text="Horas" />
-                                    <TableColumn fx:id="colLucroProd" prefWidth="92.0" text="Lucro" />
-                                    <TableColumn fx:id="colNumProd" prefWidth="143.0" text="Número de produção" />
+                                    <TableColumn fx:id="colLucroProd" prefWidth="98.0" text="Lucro" />
+                                    <TableColumn fx:id="colNumProd" prefWidth="128.0" text="Número de produção" />
                                 </columns>
                                  <VBox.margin>
                                     <Insets left="5.0" right="5.0" />
                                  </VBox.margin>
                               </TableView>
-                              <HBox>
-                                 <children>
-                                    <Button mnemonicParsing="false" onAction="#limparItens" text="Excluir todos os itens">
-                                       <HBox.margin>
-                                          <Insets left="5.0" top="10.0" />
-                                       </HBox.margin>
-                                    </Button>
-                                    <Button mnemonicParsing="false" onAction="#excluiItem" text="Excluir item selecionado">
-                                       <HBox.margin>
-                                          <Insets left="20.0" top="10.0" />
-                                       </HBox.margin>
-                                    </Button>
-                                 </children>
-                              </HBox>
+                              <Button mnemonicParsing="false" onAction="#limparItens" text="Limpar itens">
+                                 <VBox.margin>
+                                    <Insets left="5.0" top="5.0" />
+                                 </VBox.margin>
+                              </Button>
                               <Label text="Resultados">
                                  <VBox.margin>
                                     <Insets left="5.0" top="20.0" />
@@ -92,7 +83,7 @@
                               </Button>
                            </children>
                            <HBox.margin>
-                              <Insets left="5.0" />
+                              <Insets left="20.0" />
                            </HBox.margin>
                         </VBox>
                      </children>

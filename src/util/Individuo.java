@@ -13,7 +13,9 @@ public class Individuo {
 	public double numItemProd;
 	
 	public Individuo(int qtItens) {
+		
 		this.cromossomos = new int[qtItens];
+		
 	}
 	
 }

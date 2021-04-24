@@ -5,25 +5,29 @@ import java.util.Random;
 
 public class AlgoritmoGenetico {
 	
-	ArrayList<Individuo> selecionados = new ArrayList<>();
-	ArrayList<Individuo> novaGeracao = new ArrayList<>();
-	ArrayList<Individuo> mutacoes = new ArrayList<>();
+	int nItens;
+	int nPopulacao;
 	ArrayList<Item> itens = new ArrayList<>();
-	Populacao populacao = new Populacao();
-	Random roleta = new Random();
+	double penalidade;
+	int percentual;
 	double limiteMateria;
 	double limiteCusto;
 	double limiteTempo;
+	
+	
+	Populacao populacao = new Populacao();
+	Random roleta = new Random();
 	double fitnessTotal;
-	double penalidade;
 	double sorteio;
-	int nItens;
-	int nPopulacao;
-	int percentual;
 	int nSelecionados = 0;
 
+	ArrayList<Individuo> selecionados = new ArrayList<>();
+	ArrayList<Individuo> novaGeracao = new ArrayList<>();
+	ArrayList<Individuo> mutacoes = new ArrayList<>();
+	
 	public AlgoritmoGenetico(int nItens,int nPopulacao, ArrayList<Item> itens, 
 			double limiteMateriaPrima, double limiteCusto, double limiteTemp, double penalidade, int percentual) {
+		
 		this.nItens = nItens;
 		this.nPopulacao = nPopulacao;
 		this.itens = itens;
@@ -32,9 +36,10 @@ public class AlgoritmoGenetico {
 		this.limiteMateria = limiteMateriaPrima;
 		this.limiteCusto = limiteCusto;
 		this.limiteTempo = limiteTemp;
+		
 	}
 	
-	public void primeiraPopulacao() {
+public void primeiraPopulacao() {
 		
 		int i=0;
 		
@@ -49,16 +54,18 @@ public class AlgoritmoGenetico {
 				i++;
 			}
 		}
+		
 	}
 	
 	public boolean confirmaIndividuo( Individuo ind) {
 		
-		for(int j=0; j<nItens; j++) { 
-			ind.custoTotal += (int)(ind.cromossomos[j]/itens.get(j).materiaItem) * itens.get(j).custoItem;
-			ind.tempoTotal += (int)(ind.cromossomos[j]/itens.get(j).materiaItem) * itens.get(j).horasProducao;
-			ind.materiaTotal += ind.cromossomos[j];
-		}
+			for(int j=0; j<nItens; j++) { 
+				ind.custoTotal += (int)(ind.cromossomos[j]/itens.get(j).materiaItem) * itens.get(j).custoItem;
+				ind.tempoTotal += (int)(ind.cromossomos[j]/itens.get(j).materiaItem) * itens.get(j).horasProducao;
+				ind.materiaTotal += ind.cromossomos[j];
+			}
 			
+		
 		if(ind.materiaTotal <= limiteMateria && ind.custoTotal <= limiteCusto && ind.tempoTotal <= limiteTempo) {
 			
 			int check = 0;
@@ -70,14 +77,17 @@ public class AlgoritmoGenetico {
 						check++;
 					}
 				}
+				
 				if(check == nItens)
 					return false;
 			}
+			
 		}else {
 			return false;
 		}
 		
 		return true;
+		
 	}
 	
 	public Individuo fitness(){
@@ -96,6 +106,7 @@ public class AlgoritmoGenetico {
 					populacao.individuos.get(i).tempoTotal > limiteTempo) { //aplica penalidade
 				populacao.individuos.get(i).beneficio += penalidade;
 			}
+			
 		}
 		
 		double menorBeneficio = 999999999;
@@ -129,6 +140,7 @@ public class AlgoritmoGenetico {
 		}
 		
 		return ind;
+		
 	}
 	
 	public void selecao() {
@@ -157,9 +169,11 @@ public class AlgoritmoGenetico {
 	Individuo ind = null;
 		
 		while(i < nPopulacao){ 
+			
 			if(populacao.individuos.get(i).propSelecao > 0) { //Se a porcentagem é 0, não tem espaço na roleta e apenas pula a vez
 				
 				fimDaFaixa += populacao.individuos.get(i).propSelecao; //Defina o epaço do individuo na roleta
+				
 				if(sorteio >= inicioDaFaixa && 
 						sorteio < fimDaFaixa && 
 						!populacao.individuos.get(i).selecionado) {
@@ -167,10 +181,13 @@ public class AlgoritmoGenetico {
 					ind = populacao.individuos.get(i);
 					return ind;
 				}
+				
 				inicioDaFaixa += populacao.individuos.get(i).propSelecao; //Defina os epaços do individuo na roleta
 			}
+			
 			i++;
 		}
+		
 		return null;
 	}
 	
@@ -185,6 +202,7 @@ public class AlgoritmoGenetico {
 			pontoDeCorte = roleta.nextInt(nItens-1);
 			sorteio1 = roleta.nextInt(selecionados.size());
 			sorteio2 = roleta.nextInt(selecionados.size());
+		
 			while(!confirmaSorteio(sorteio1, sorteio2)) {
 				sorteio1 = roleta.nextInt(selecionados.size());
 				sorteio2 = roleta.nextInt(selecionados.size());
@@ -198,6 +216,7 @@ public class AlgoritmoGenetico {
 		populacao.individuos.addAll(novaGeracao);
 		selecionados.clear();
 		novaGeracao.clear();
+		
 	}
 	
 	public boolean confirmaSorteio(int sorteio1, int sorteio2) {
@@ -207,6 +226,7 @@ public class AlgoritmoGenetico {
 		}else {
 			return true;
 		}
+		
 	}
 	
 	public void aplicaCrossover(int sorteio1, int sorteio2, int pontoDeCorte) {
@@ -250,6 +270,7 @@ public class AlgoritmoGenetico {
 		pai2.cromossomos = selecionados.get(sorteio2).cromossomos;
 		novaGeracao.add(pai1);
 		novaGeracao.add(pai2);
+		
 		selecionados.remove(sorteio1); //Quando remove, diminuirá uma posição do index
 		
 		if(sorteio1 < sorteio2) { //Ajustando index caso o individuo sorteado1 for de index menor que o sorteado2 na lista
@@ -257,6 +278,7 @@ public class AlgoritmoGenetico {
 		}
 		
 		selecionados.remove(sorteio2);
+
 		novaGeracao.add(filho1);
 		novaGeracao.add(filho2);
 	}
@@ -298,12 +320,15 @@ public class AlgoritmoGenetico {
 		
 			populacao.individuos.get(indexMutacao).cromossomos[geneDeMutacao] = valorMutacao;
 			mutacoes.add(populacao.individuos.get(indexMutacao)); //passa para a lista de individuos já mudificados
+			
 			cont++;
+			
 			populacao.individuos.remove(indexMutacao); //Remove da população o individuo selecionado para a mutação
 			
 		}
 		
 		populacao.individuos.addAll(mutacoes); //Ao final, adiciona novamente à população todos os individuos que sofreram mutação
 		mutacoes.clear(); // limpa a lista de individuos que foram modificados
+		
 	}
 }
