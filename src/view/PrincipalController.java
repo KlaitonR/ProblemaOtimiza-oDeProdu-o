@@ -473,8 +473,8 @@ public class PrincipalController {
 		private File selecionaScript() {
 			try {
 				FileChooser fileChooser = new FileChooser();
-			   		fileChooser.setInitialDirectory(new File(
-			   				"C:\\Users\\klait\\eclipse-workspace\\ProblemaOtimizacaoDeProducao\\res"));
+//			   		fileChooser.setInitialDirectory(new File(
+//			   				"C:\\Users\\klait\\eclipse-workspace\\ProblemaOtimizacaoDeProducao\\res"));
 			   		fileChooser.getExtensionFilters().add(new 
 			   				FileChooser.ExtensionFilter("*.txt", "*.TXT")); 	
 			   		File txtSelec = fileChooser.showOpenDialog(null);
